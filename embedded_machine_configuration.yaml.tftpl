@@ -1,0 +1,11 @@
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: ${hostname}
+auto: off
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers: 
+%{ for dns in nameservers ~}
+  - address: ${dns}
+%{ endfor ~}
