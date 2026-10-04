@@ -1,9 +1,3 @@
-data "talos_image_factory_versions" "this" {
-  filters = {
-    stable_versions_only = true
-  }
-}
-
 data "talos_image_factory_extensions_versions" "this" {
   # get the latest talos version
   talos_version = var.talos_version
