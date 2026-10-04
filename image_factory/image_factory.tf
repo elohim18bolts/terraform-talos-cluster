@@ -15,10 +15,7 @@ resource "talos_image_factory_schematic" "this" {
         systemExtensions = {
           officialExtensions = data.talos_image_factory_extensions_versions.this.extensions_info.*.name
         }
-        embeddedMachineConfiguration = templatefile("${path.module}/embedded_machine_configuration.yaml.tftpl", {
-          hostname    = "talos-testing"
-          nameservers = var.nameservers
-        })
+        embeddedMachineConfiguration = var.embedded_mc
       }
     }
   )

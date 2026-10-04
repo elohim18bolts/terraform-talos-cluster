@@ -20,8 +20,26 @@ For Proxmox you can have the `qcow2` image url by doing `terraform output -raw d
 
 ## Machine Embedded Configurations
 
-You have the option to embed configs into the `disk` or `iso`  images before installing talos, you can add or modify the `dns server`, or any of the talos machine configurations. If you'd like to do that modify the file located at `image_factory/embedded_machine_configuration.yaml.tftpl` this modifycation will be baked into the image when you download them.
-    
+You have the option to embed configs into the `disk` or `iso`  images before installing talos, you can add or modify the `dns server`, or any of the talos machine configurations. If you'd like to do that modify `embedded_mc` variable, these modifications will be baked into the image when you download them.
+```hcl
+module "image_factory" {
+  source            = "./image_factory"
+  talos_version     = module.version.latest
+  architecture      = "arm64"
+  disk_image_format = "qcow2"
+  embedded_mc = <<-EOF
+    apiVersion: v1alpha1
+    kind: HostnameConfig
+    hostname: talos-test
+    auto: off
+    ---
+    apiVersion: v1alpha1
+    kind: ResolverConfig
+    nameservers: 
+      - address: "1.1.1.1"
+  EOF
+}
+```    
 
 
 

@@ -15,6 +15,17 @@ module "image_factory" {
   talos_version     = module.version.latest
   architecture      = "arm64"
   disk_image_format = "qcow2"
+  embedded_mc       = <<-EOF
+    apiVersion: v1alpha1
+    kind: HostnameConfig
+    hostname: talos-test
+    auto: off
+    ---
+    apiVersion: v1alpha1
+    kind: ResolverConfig
+    nameservers: 
+      - address: "1.1.1.1"
+  EOF
 }
 
 module "cluster" {

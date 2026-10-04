@@ -1,4 +1,9 @@
 #Documentation: https://github.com/siderolabs/image-factory/blob/74025441874f4af8f9a711c51e1b7746af35cd97/docs/api.md?plain=1#L282
+
+variable "embedded_mc" {
+  type    = string
+  default = ""
+}
 variable "image_extensions" {
   type    = list(string)
   default = ["qemu"]
