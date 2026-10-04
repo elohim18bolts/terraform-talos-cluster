@@ -23,18 +23,20 @@ resource "talos_image_factory_schematic" "this" {
         systemExtensions = {
           officialExtensions = data.talos_image_factory_extensions_versions.this.extensions_info.*.name
         }
-        embeddedMachineConfiguration = yamlencode(templatefile("${path.module}/embedded_machine_configuration.yaml.tftpl", {
+        embeddedMachineConfiguration = templatefile("${path.module}/embedded_machine_configuration.yaml.tftpl", {
           hostname    = "talos-testing"
           nameservers = var.nameservers
-        }))
+        })
       }
     }
   )
 }
 
 data "talos_image_factory_urls" "this" {
-  talos_version = local.version
-  schematic_id  = talos_image_factory_schematic.this.id
-  platform      = "metal"
+  talos_version     = local.version
+  schematic_id      = talos_image_factory_schematic.this.id
+  architecture      = var.architecture
+  platform          = var.platform
+  disk_image_format = var.disk_image_format
 }
 
