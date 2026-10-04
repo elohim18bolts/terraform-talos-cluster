@@ -11,9 +11,10 @@ module "version" {
   source = "./version"
 }
 module "image_factory" {
-  source        = "./image_factory"
-  talos_version = module.version.latest
-  architecture  = "arm64"
+  source            = "./image_factory"
+  talos_version     = module.version.latest
+  architecture      = "arm64"
+  disk_image_format = "qcow2"
 }
 
 module "cluster" {
@@ -21,7 +22,9 @@ module "cluster" {
   controlplanes_ips = ["192.168.100.12", "192.168.100.13"]
   workers_ips       = ["192.168.100.11"]
   cluster_name      = "my-talos-cluster"
+
 }
+
 
 
 
