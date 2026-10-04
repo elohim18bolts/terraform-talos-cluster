@@ -14,14 +14,11 @@ variable "nameservers" {
 }
 
 variable "talos_version" {
-  type    = string
-  default = null
+  type = string
 }
 
 variable "architecture" {
-  type    = string
-  default = "arm64"
-
+  type = string
 }
 
 variable "platform" {

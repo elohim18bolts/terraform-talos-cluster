@@ -1,5 +1,3 @@
-provider "talos" {}
-
 data "talos_image_factory_versions" "this" {
   filters = {
     stable_versions_only = true
@@ -8,7 +6,7 @@ data "talos_image_factory_versions" "this" {
 
 data "talos_image_factory_extensions_versions" "this" {
   # get the latest talos version
-  talos_version = local.version
+  talos_version = var.talos_version
   filters = {
     names = var.image_extensions
   }
@@ -33,7 +31,7 @@ resource "talos_image_factory_schematic" "this" {
 }
 
 data "talos_image_factory_urls" "this" {
-  talos_version     = local.version
+  talos_version     = var.talos_version
   schematic_id      = talos_image_factory_schematic.this.id
   architecture      = var.architecture
   platform          = var.platform
