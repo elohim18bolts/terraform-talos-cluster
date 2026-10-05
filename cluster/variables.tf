@@ -1,3 +1,15 @@
+# Map controller ip to a list of patches
+variable "controller_patches" {
+  type    = map(list(string))
+  default = null
+}
+
+
+# Map worker ip to a list of patches
+variable "worker_patches" {
+  type    = map(list(string))
+  default = null
+}
 variable "cluster_opts" {
   type = object({
     nameservers = list(string)

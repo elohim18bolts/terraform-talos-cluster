@@ -5,6 +5,7 @@ data "talos_machine_configuration" "controlplane" {
   cluster_endpoint   = "https://${each.key}:6443"
   machine_secrets    = talos_machine_secrets.this.machine_secrets
   kubernetes_version = var.kubernetes_version
+  config_patches     = var.controller_patches == null ? [] : var.controller_patches[each.value]
 }
 
 data "talos_machine_configuration" "worker" {
@@ -14,14 +15,11 @@ data "talos_machine_configuration" "worker" {
   cluster_endpoint   = "https://${each.key}:6443"
   machine_secrets    = talos_machine_secrets.this.machine_secrets
   kubernetes_version = var.kubernetes_version
+  config_patches     = var.worker_patches == null ? [] : var.worker_patches[each.value]
 }
 
-resource "talos_machine_configuration_apply" "controlplane" {
-  for_each                    = toset(var.controlplanes_ips)
-  client_configuration        = talos_machine_secrets.this.client_configuration
-  machine_configuration_input = data.talos_machine_configuration.controlplane[each.key].machine_configuration
-  node                        = each.key
-  config_patches = concat([
+locals {
+  default_controller_patches = concat([
     templatefile("${path.module}/patches/cluster_cidr.yaml.tftpl", {
       pod_cidr     = var.pod_cidr
       service_cidr = var.service_cidr
@@ -37,14 +35,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
     ], var.cluster_opts.cni ? [] : [templatefile("${path.module}/patches/cni.yaml.tftpl", {
       cni = var.cluster_opts.cni
   })])
-}
-
-resource "talos_machine_configuration_apply" "worker" {
-  for_each                    = toset(var.workers_ips)
-  client_configuration        = talos_machine_secrets.this.client_configuration
-  machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration
-  node                        = each.key
-  config_patches = [
+  default_worker_patches = [
     templatefile("${path.module}/patches/cluster_cidr.yaml.tftpl", {
       pod_cidr     = var.pod_cidr
       service_cidr = var.service_cidr
@@ -53,6 +44,23 @@ resource "talos_machine_configuration_apply" "worker" {
       nameservers = var.cluster_opts.nameservers
     }),
   ]
+}
+
+resource "talos_machine_configuration_apply" "controlplane" {
+  for_each                    = toset(var.controlplanes_ips)
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.controlplane[each.key].machine_configuration
+  node                        = each.key
+  config_patches              = local.default_controller_patches
+
+}
+
+resource "talos_machine_configuration_apply" "worker" {
+  for_each                    = toset(var.workers_ips)
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration
+  node                        = each.key
+  config_patches              = local.default_worker_patches
 }
 
 
