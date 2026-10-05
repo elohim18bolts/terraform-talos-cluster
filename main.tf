@@ -33,9 +33,55 @@ module "cluster" {
   controlplanes_ips = ["192.168.100.12", "192.168.100.13"]
   workers_ips       = ["192.168.100.11"]
   cluster_name      = "my-talos-cluster"
-
+  controller_patches = {
+    "192.168.100.12" = [
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        "$patch"   = "delete"
+      }),
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        auto       = null
+        hostname   = "controller-1"
+      })
+    ]
+    "192.168.100.13" = [
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        "$patch"   = "delete"
+      }),
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        auto       = null
+        hostname   = "controller-2"
+      })
+    ]
+  }
+  worker_patches = {
+    "192.168.100.11" = [
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        "$patch"   = "delete"
+      }),
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "HostnameConfig"
+        auto       = null
+        hostname   = "worker"
+      })
+    ]
+  }
 }
 
+output "kubeconfig" {
+  value     = module.cluster.kubeconfig
+  sensitive = true
+}
 
 
 
